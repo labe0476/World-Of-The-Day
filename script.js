@@ -84,9 +84,9 @@ function speakWord() {
     console.warn("Cannot speak: no word or speech synthesis not available");
     return;
   }
-  const utterance = new SpeechSynthesisUtterance(currentWord);
-  utterance.lang = "en-US";
-  window.speechSynthesis.speak(utterance);
+  const speak = new SpeechSynthesisUtterance(currentWord);
+  speak.lang = "en-US";
+  window.speechSynthesis.speak(speak);
 }
 
 if (searchBtn) searchBtn.addEventListener("click", searchWord);
