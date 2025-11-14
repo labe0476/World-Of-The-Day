@@ -7,7 +7,7 @@ const words = [
   "Project",
   "Coding",
   "Charger",
-  "Resilient",
+  "good",
   "Folder",
 ];
 
