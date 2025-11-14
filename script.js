@@ -1,108 +1,60 @@
-const words = [
-  "Student",
-  "Tutor",
-  "Hub",
-  "Laptop",
-  "Router",
-  "Project",
-  "Coding",
-  "Charger",
-  "good",
-  "Folder",
-];
-
 let wordDisplay = document.querySelector("#wordDisplay");
 let definition = document.querySelector("#definition");
-let newWordBtn = document.querySelector("#newWordBtn");
+let searchBtn = document.querySelector("#searchBtn");
+let searchInput = document.querySelector("#searchInput");
 let speakBtn = document.querySelector("#speakBtn");
 let currentWord = "";
-let wordIndex = 0;
 
 if (speakBtn) speakBtn.disabled = true;
 
-function fetchWord() {
-  if (!wordDisplay || !definition) {
-    console.error("HTML elements not found");
+function searchWord() {
+  let word = searchInput.value.trim();
+
+  if (!word) {
+    definition.textContent = "Please enter a word";
     return;
   }
-
   wordDisplay.textContent = "Loading...";
   definition.textContent = "Loading definition...";
 
-  let word = words[wordIndex];
-  wordIndex = (wordIndex + 1) % words.length;
+  currentWord = word;
+  wordDisplay.textContent = word;
+  if (speakBtn) speakBtn.disabled = false;
 
-  const url =
-    "https://www.wordsapi.com/api/v1/words/" + encodeURIComponent(word);
-  const fetchData = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  };
-
-  fetch(url, fetchData)
-    .then(function (response) {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then(function (data) {
-      console.log("Response:", data);
-
-      if (!data || !data.word) {
-        throw new Error("Invalid response format");
-      }
-
-      currentWord = data.word;
-      wordDisplay.textContent = currentWord;
-      if (speakBtn) speakBtn.disabled = false;
-
-      if (
-        data.results &&
-        Array.isArray(data.results) &&
-        data.results.length > 0
-      ) {
-        definition.textContent = data.results[0].definition;
-      } else {
-        fetchDictionaryFallback(word);
-      }
-    })
-    .catch(function (error) {
-      console.error("Error:", error);
-      currentWord = word;
-      wordDisplay.textContent = word;
-      if (speakBtn) speakBtn.disabled = false;
-      fetchDictionaryFallback(word);
-    })
-    .finally(function () {
-      console.log("Fetch completed");
-    });
+  setTimeout(function () {
+    wordDisplay.textContent = word;
+    if (speakBtn) speakBtn.disabled = false;
+    fetchDictionaryAPI(word);
+  }, 20000);
+  fetchDictionaryAPI(word);
 }
 
-function speakWord() {
-  if (!currentWord || !window.speechSynthesis) {
-    console.warn("Cannot speak: no word or speech synthesis not available");
-    return;
-  }
-  const utterance = new SpeechSynthesisUtterance(currentWord);
-  utterance.lang = "en-US";
-  window.speechSynthesis.speak(utterance);
-}
-
-function fetchDictionaryFallback(word) {
+function fetchDictionaryAPI(word) {
   const url =
     "https://api.dictionaryapi.dev/api/v2/entries/en/" +
     encodeURIComponent(word);
+
   fetch(url, { method: "GET", headers: { Accept: "application/json" } })
     .then(function (res) {
-      if (!res.ok) throw new Error("Fallback fetch failed");
-      return res.json();
+      return res.text().then(function (text) {
+        let body = null;
+        try {
+          body = text ? JSON.parse(text) : null;
+        } catch (e) {
+          body = text;
+        }
+        if (!res.ok) {
+          console.warn("DictionaryAPI non-OK response", res.status, body);
+          const msg =
+            (body && (body.title || body.message)) || `API error ${res.status}`;
+          definition.textContent = msg;
+          throw new Error("Dictionary API returned " + res.status);
+        }
+        return body;
+      });
     })
     .then(function (data) {
-      console.log("Fallback response:", data);
+      console.log("DictionaryAPI response:", data);
       if (
         Array.isArray(data) &&
         data[0] &&
@@ -117,12 +69,32 @@ function fetchDictionaryFallback(word) {
       }
     })
     .catch(function (err) {
-      console.warn("Fallback definition failed", err);
-      definition.textContent = "No definition available.";
+      console.warn("DictionaryAPI failed:", err);
+      if (
+        !definition.textContent ||
+        definition.textContent === "Loading definition..."
+      ) {
+        definition.textContent = "Definition not found. Try another word.";
+      }
     });
 }
 
-if (newWordBtn) newWordBtn.addEventListener("click", fetchWord);
-if (speakBtn) speakBtn.addEventListener("click", speakWord);
+function speakWord() {
+  if (!currentWord || !window.speechSynthesis) {
+    console.warn("Cannot speak: no word or speech synthesis not available");
+    return;
+  }
+  const utterance = new SpeechSynthesisUtterance(currentWord);
+  utterance.lang = "en-US";
+  window.speechSynthesis.speak(utterance);
+}
 
-fetchWord();
+if (searchBtn) searchBtn.addEventListener("click", searchWord);
+if (speakBtn) speakBtn.addEventListener("click", speakWord);
+if (searchInput) {
+  searchInput.addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+      searchWord();
+    }
+  });
+}

@@ -1,8 +1,7 @@
-
 body {
   margin: 0;
   box-sizing: border-box;
-  font-family:  Arial;
+  font-family: Arial;
   background: linear-gradient(180deg, #eaf8ff 0%, #f7fcff 100%);
   color: #16324f;
   display: flex;
@@ -21,7 +20,7 @@ header {
 }
 
 header h1 {
-  background:  #2b78ff;
+  background: #2b78ff;
   color: white;
   padding: 6px 16px;
   border-radius: 3px;
@@ -38,8 +37,8 @@ header .head {
 
 header .head .tag {
   margin: 0 0 8px 0;
-  font-size: 12px;
-  color: #7f8c9a;
+  font-size: 16px;
+  color: #3285dd;
 }
 
 .main-container {
@@ -55,15 +54,38 @@ header .head .tag {
   text-align: center;
 }
 
-.card-inner {
+.card-content {
   max-width: 780px;
   margin: 0 auto;
+}
+
+.search-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  padding: 10px 15px;
+  font-size: 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  width: 250px;
+  font-family: Arial;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #2b78ff;
+  box-shadow: 0 0 5px rgba(43, 120, 255, 0.3);
 }
 
 .word-display {
   font-size: 48px;
   font-weight: 700;
-  color:  #2b78ff;
+  color: #2b78ff;
   margin-bottom: 28px;
   text-transform: capitalize;
   letter-spacing: 2px;

@@ -9,22 +9,31 @@
   <body>
     <header>
       <div class="head">
-        <p class="tag">Discover • Learn • Remember</p>
-        <h1>Word Of The Day</h1>
+        <p class="tag">Search • Learn • Speak</p>
+        <h1>Word Dictionary</h1>
       </div>
     </header>
 
     <main class="main-container">
       <section class="card">
-        <div class="card-inner">
-          <div id="wordDisplay" class="word-display" >
-            Loading...
+        <div class="card-content">
+          <div class="search-box">
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Enter a word..."
+            />
+            <button id="searchBtn" class="btn orange">Search</button>
           </div>
 
-          <div class="definition" id="definition">Loading definition...</div>
+          <div id="wordDisplay" class="word-display">Enter a word to begin</div>
+
+          <div class="definition" id="definition">
+            Type a word 
+          </div>
 
           <div class="controls">
-            <button id="newWordBtn" class="btn orange">New Word</button>
             <button id="speakBtn" class="btn blue">Speak</button>
           </div>
         </div>
